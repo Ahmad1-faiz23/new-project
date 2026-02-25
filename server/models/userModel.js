@@ -1,19 +1,15 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema(
-  {
-    clerkId: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
-    phone: { type: String },
-    firstName: { type: String },
-    lastName: { type: String },
-    creditBalance: { type: Number, default: 5 }
-  },
-  { timestamps: true }
-);
+const userSchema = new mongoose.Schema({
+  clerkId: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  firstName: String,
+  lastName: String,
+  photo: String,
+  creditBalance: { type: Number, default: 5 },
+});
 
-// Prevent model overwrite error in dev
-const userModel =
-  mongoose.models.user || mongoose.model("user", userSchema);
+const User =
+  mongoose.models.User || mongoose.model("User", userSchema);
 
-export default userModel;
+export default User;
