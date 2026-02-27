@@ -6,12 +6,10 @@ import userRouter from "./routes/userRoutes.js";
 
 const app = express();
 
-/* MongoDB connection */
 let isConnected = false;
 
 const connectDB = async () => {
   if (isConnected) return;
-
   const db = await mongoose.connect(process.env.MONGODB_URL);
   isConnected = db.connections[0].readyState === 1;
   console.log("MongoDB Connected ✅");
@@ -25,17 +23,7 @@ app.get("/", (req, res) => {
   res.send("API Working 🚀");
 });
 
-/* 🔥 LOCAL RUN */
-if (process.env.NODE_ENV !== "production") {
-  const PORT = 4000;
-  connectDB().then(() => {
-    app.listen(PORT, () => {
-      console.log("Server Running on port " + PORT);
-    });
-  });
-}
-
-/* 🔥 VERCEL RUN */
+/* 🔥 VERCEL SERVERLESS HANDLER */
 export default async function handler(req, res) {
   await connectDB();
   return app(req, res);
