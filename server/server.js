@@ -6,39 +6,36 @@ import userRouter from "./routes/userRoutes.js";
 
 const app = express();
 
-/* -------- MongoDB Connection (Serverless Safe) -------- */
-
+/* MongoDB connection */
 let isConnected = false;
 
 const connectDB = async () => {
   if (isConnected) return;
 
-  try {
-    const db = await mongoose.connect(process.env.MONGODB_URL);
-    isConnected = db.connections[0].readyState === 1;
-    console.log("MongoDB Connected ✅");
-  } catch (error) {
-    console.error("MongoDB Error ❌", error.message);
-    throw error;
-  }
+  const db = await mongoose.connect(process.env.MONGODB_URL);
+  isConnected = db.connections[0].readyState === 1;
+  console.log("MongoDB Connected ✅");
 };
 
-/* -------- Middlewares -------- */
-
 app.use(cors());
-
-/* Webhook FIRST */
 app.use("/api/user", userRouter);
-
-/* JSON AFTER webhook */
 app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("API Working 🚀");
 });
 
-/* -------- EXPORT FOR VERCEL -------- */
+/* 🔥 LOCAL RUN */
+if (process.env.NODE_ENV !== "production") {
+  const PORT = 4000;
+  connectDB().then(() => {
+    app.listen(PORT, () => {
+      console.log("Server Running on port " + PORT);
+    });
+  });
+}
 
+/* 🔥 VERCEL RUN */
 export default async function handler(req, res) {
   await connectDB();
   return app(req, res);
